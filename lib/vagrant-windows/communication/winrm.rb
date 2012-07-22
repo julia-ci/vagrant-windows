@@ -30,7 +30,7 @@ module Vagrant
       def ready?
         logger.debug("Checking whether WinRM is ready...")
 
-        Timeout.timeout(@vm.config.winrm.timeout) do
+        Timeout.timeout(@vm.config.winrm.boot_timeout) do
           execute "hostname"
         end
 

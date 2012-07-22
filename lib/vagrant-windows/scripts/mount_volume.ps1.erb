@@ -35,9 +35,13 @@ if (-not (Test-Path $BaseDirectory))
   New-Item $BaseDirectory -Type Directory -Force | Out-Null
 }
 
+net use \\vboxsrv\$ShareName\
+
 cmd /c mklink /D "$MountPoint" "\\vboxsrv\$ShareName"
 
-if ( $LASTEXITCODE -ne 0 )
+$exitcode = $LASTEXITCODE
+
+if ( $exitcode -ne 0 )
 {
   exit 1
 }

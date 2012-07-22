@@ -5,7 +5,7 @@ module Vagrant
     end
 
     def channel
-      if @guest.class.eql? Vagrant::Guest::Windows
+      if @guest.class.eql? VagrantPlugins::Windows::Guest::Windows
         @channel ||= Communication::WinRM.new(self)
       else
         @channel ||= Communication::SSH.new(self)

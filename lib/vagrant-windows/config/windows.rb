@@ -1,6 +1,6 @@
 module Vagrant
   module Config
-    class Windows < Vagrant::Config::Base
+    class Windows < Vagrant.plugin("1", :config)
       attr_accessor :winrm_user
       attr_accessor :winrm_password
       attr_accessor :halt_timeout
@@ -23,5 +23,3 @@ module Vagrant
     end
   end
 end
-
-Vagrant.config_keys.register(:windows) { Vagrant::Config::Windows }

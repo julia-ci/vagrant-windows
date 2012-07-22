@@ -1,18 +1,19 @@
-module Vagrant
-  module Guest
+module VagrantPlugins
+  module Windows
+    module Guest
     # A general Vagrant system implementation for "windows".
     #
     # Contributed by Chris McClimans <chris@hippiehacker.org>
-    class Windows < Base
+    class Windows < Vagrant.plugin("1", :guest)
       # A custom config class which will be made accessible via `config.windows`
       # Here for whenever it may be used.
-      class WindowsError < Errors::VagrantError
+      class WindowsError < Vagrant::Errors::VagrantError
         error_namespace("vagrant.guest.windows")
       end
 
       def change_host_name(name)
         #### on windows, renaming a computer seems to require a reboot
-        vm.channel.execute("wmic computersystem where name=\"%COMPUTERNAME%\" call rename name=\"#{name}\"")
+        vm.channel.execute("cmd /c 'wmic computersystem where name=\"%COMPUTERNAME%\" call rename name=\"#{name}\"'")
       end
 
       # TODO: I am sure that ciphering windows versions will be important at some point
@@ -32,6 +33,15 @@ module Vagrant
 
           return if count >= @vm.config.windows.halt_timeout
           sleep @vm.config.windows.halt_check_interval
+        end
+      end
+      
+      def reboot!
+        @vm.channel.execute("shutdown /r /t 1 /c \"Vagrant Reboot\" /f /d p:4:1")
+        
+        sleep 40 #Windows allows up to 30sec for shutdown. Add 10sec to be on the safe side
+        while !@vm.channel.ready?
+            sleep 2
         end
       end
 
@@ -98,9 +108,7 @@ module Vagrant
       end
 
 
-
+    end
     end
   end
 end
-
-Vagrant.guests.register(:windows)  { Vagrant::Guest::Windows }
